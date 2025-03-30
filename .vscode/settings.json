@@ -90,4 +90,5 @@
         },
         "editor.formatOnType": true,
     },
+    "cmake.ignoreCMakeListsMissing": true,
 }
