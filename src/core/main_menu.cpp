@@ -2,34 +2,47 @@
 #include <globals.h>
 #include "display.h"
 
+bool homeScreenLocal = getHomeScreen();
 
 MainMenu::MainMenu() {
-    _menuItems = {
-        &wifiMenu,
-        &bleMenu,
-    #if !defined(REMOVE_RF_MENU)
-        &rfMenu,
-    #endif
-    #if !defined(REMOVE_RFID_MENU)
-        &rfidMenu,
-    #endif
-        &irMenu,
-    #if defined(FM_SI4713)
-        &fmMenu,
-    #endif
-        &fileMenu,
-        &gpsMenu,
-    #if !defined(REMOVE_NRF_MENU)
-        &nrf24Menu,
-    #endif
-    #if !defined(LITE_VERSION)
-        &scriptsMenu,
-    #endif
-        &othersMenu,
-        &clockMenu,
-        &connectMenu,
-        &configMenu,
-    };
+    _menuItems.clear();
+    if(getHomeScreen()) {
+        _menuItems.clear();
+        _menuItems = {
+            &AnimMenu,
+        };
+    }
+    else{
+        _menuItems.clear();
+        _menuItems = {
+            &wifiMenu,
+            &bleMenu,
+        #if !defined(REMOVE_RF_MENU)
+            &rfMenu,
+        #endif
+        #if !defined(REMOVE_RFID_MENU)
+            &rfidMenu,
+        #endif
+            &irMenu,
+        #if defined(FM_SI4713)
+            &fmMenu,
+        #endif
+            &fileMenu,
+            &gpsMenu,
+        #if !defined(REMOVE_NRF_MENU)
+            &nrf24Menu,
+        #endif
+        #if !defined(LITE_VERSION)
+            &scriptsMenu,
+        #endif
+            &othersMenu,
+            &clockMenu,
+            &connectMenu,
+            &configMenu,
+            &AnimMenu,
+        };
+    }
+
 
     _totalItems = _menuItems.size();
 }

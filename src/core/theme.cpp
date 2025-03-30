@@ -1,5 +1,6 @@
 #include "theme.h"
 #include "display.h"
+#include "utils.h"
 
 struct ThemeEntry {
     const char *key;
@@ -53,7 +54,8 @@ bool BruceTheme::openThemeFile(FS *fs, String filepath) {
         {"clock", &theme.clock, theme.paths.clock},
         {"others", &theme.others, theme.paths.others},
         {"connect", &theme.connect, theme.paths.connect},
-        {"config", &theme.config, theme.paths.config}
+        {"config", &theme.config, theme.paths.config},
+        {"anim", &theme.anim, theme.paths.anim}
     };
 
     JsonObject _th = jsonDoc.as<JsonObject>();
