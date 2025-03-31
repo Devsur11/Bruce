@@ -24,13 +24,13 @@ void animMenu::drawIconImg() {
     if(homeScreen) {
         drawImg(*bruceConfig.themeFS(), bruceConfig.getThemeItemImg(bruceConfig.theme.paths.anim), 0, imgCenterY, true);
     } else {
-        drawImg(*bruceConfig.themeFS(), bruceConfig.getThemeItemImg(bruceConfig.theme.paths.wifi), imgCenterY, true);
+        drawImg(*bruceConfig.themeFS(), bruceConfig.getThemeItemImg(bruceConfig.theme.paths.exit), imgCenterY, true);
     }
 }
 
 void animMenu::drawIcon(float scale) {
     clearIconArea();
-    tft.drawString("Theme not found", 100, 100, 1);
+    tft.drawString("Theme not found", 100, 50, 1);
 }
 
 void gotoApps() {

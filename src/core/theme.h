@@ -22,6 +22,7 @@ struct themeFiles {
     String connect    ="";
     String config     ="";
     String anim       ="";
+    String exit       ="";
 };
 
 struct themeInfo {
@@ -45,6 +46,7 @@ struct themeInfo {
     bool connect    =false;
     bool config     =false;
     bool anim       =false;
+    bool exit       =false;
 
     // Theme file paths, colors and border
     themeFiles paths;

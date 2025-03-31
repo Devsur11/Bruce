@@ -13,46 +13,48 @@ MainMenu::MainMenu() {
     //    };
     //}
     //else{
-        _menuItems.clear();
-        _menuItems = {
-            &AnimMenu,
-        };
 
-        if (!getHomeScreen()) {
-            _menuItems.push_back(&wifiMenu);
-            _menuItems.push_back(&bleMenu);
-        #if !defined(REMOVE_RF_MENU)
-            _menuItems.push_back(&rfMenu);
-        #endif
-        #if !defined(REMOVE_RFID_MENU)
-            _menuItems.push_back(&rfidMenu);
-        #endif
-            _menuItems.push_back(&irMenu);
-        #if defined(FM_SI4713)
-            _menuItems.push_back(&fmMenu);
-        #endif
-            _menuItems.push_back(&fileMenu);
-            _menuItems.push_back(&gpsMenu);
-        #if !defined(REMOVE_NRF_MENU)
-            _menuItems.push_back(&nrf24Menu);
-        #endif
-        #if !defined(LITE_VERSION)
-            _menuItems.push_back(&scriptsMenu);
-        #endif
-            _menuItems.push_back(&othersMenu);
-            _menuItems.push_back(&clockMenu);
-            _menuItems.push_back(&connectMenu);
-            _menuItems.push_back(&configMenu);
-        }
-    //}
-
-
-    _totalItems = _menuItems.size();
 }
 
 MainMenu::~MainMenu() {}
 
 void MainMenu::begin(void) {
+
+    _menuItems.clear();
+    _menuItems = {
+        &AnimMenu,
+    };
+    if (!getHomeScreen()) {
+        _menuItems.push_back(&wifiMenu);
+        _menuItems.push_back(&bleMenu);
+    #if !defined(REMOVE_RF_MENU)
+        _menuItems.push_back(&rfMenu);
+    #endif
+    #if !defined(REMOVE_RFID_MENU)
+        _menuItems.push_back(&rfidMenu);
+    #endif
+        _menuItems.push_back(&irMenu);
+    #if defined(FM_SI4713)
+        _menuItems.push_back(&fmMenu);
+    #endif
+        _menuItems.push_back(&fileMenu);
+        _menuItems.push_back(&gpsMenu);
+    #if !defined(REMOVE_NRF_MENU)
+        _menuItems.push_back(&nrf24Menu);
+    #endif
+    #if !defined(LITE_VERSION)
+        _menuItems.push_back(&scriptsMenu);
+    #endif
+        _menuItems.push_back(&othersMenu);
+        _menuItems.push_back(&clockMenu);
+        _menuItems.push_back(&connectMenu);
+        _menuItems.push_back(&configMenu);
+    }
+    //}
+
+
+    _totalItems = _menuItems.size();
+
     options = {};
 
     std::vector<String> l = bruceConfig.disabledMenus;
