@@ -3,6 +3,8 @@
 #include "core/utils.h"
 #include "animMenu.h"
 #include "core/main_menu.h"
+#include <globals.h>
+
 
 bool homeScreen =1;
 
@@ -30,18 +32,71 @@ void animMenu::drawIconImg() {
 
 void animMenu::drawIcon(float scale) {
     clearIconArea();
-    tft.drawString("Theme not found", 100, 50, 1);
+    if (bruceConfig.animationThemes.empty()) {
+        tft.drawString("No animations available", 100, 50, 1);
+        return;
+    }
+
+    // Select a random animation theme from the list
+    size_t randomIndex = random(0, bruceConfig.animationThemes.size());
+    String randomAnimation = bruceConfig.animationThemes[randomIndex];
+
+    // Attempt to draw the selected animation
+    if (!drawImg(*bruceConfig.themeFS(), randomAnimation, 0, imgCenterY, true)) {
+        tft.drawString("Failed to load animation", 100, 50, 1);
+    }
 }
 
-void gotoApps() {
+inline void gotoApps() {
     homeScreen = 0;
 }
 
-void selectAnim(){
-
+void selectAnim() {
+    FS* fs = nullptr;
+    if (setupSdCard()) {
+        options = {
+            {"Add Animation", [&]() {
+                options = {
+                    {"SD Card", [&]() {
+                        fs = &SD;
+                        String filepath = loopSD(*fs, true, "JPG|GIF|PNG");
+                        if (!filepath.isEmpty()) {
+                            bruceConfig.addAnimationTheme(filepath);
+                        }
+                    }},
+                    {"Internal FS", [&]() {
+                        fs = &LittleFS;
+                        String filepath = loopSD(*fs, true, "JPG|GIF|PNG");
+                        if (!filepath.isEmpty()) {
+                            bruceConfig.addAnimationTheme(filepath);
+                        }
+                    }},
+                    {"Back", [&]() {}}
+                };
+                loopOptions(options);
+                String filepath = loopSD(*fs, true, "JPG|GIF|PNG");
+                if (!filepath.isEmpty()) {
+                    bruceConfig.addAnimationTheme(filepath);
+                }
+            }},
+            {"Remove Animation", [&]() {
+                options.clear();
+                for (const auto& path : bruceConfig.animationThemes) {
+                    options.push_back({path, [&]() { bruceConfig.removeAnimationTheme(path); }});
+                }
+                options.push_back({"Back", [&]() {}});
+                loopOptions(options);
+            }},
+            {"Default", [&]() { bruceConfig.animationThemes.clear(); bruceConfig.saveFile(); }},
+            {"Main Menu", [&]() { fs = nullptr; }}
+        };
+        loopOptions(options);
+    }
+    if (fs == nullptr) return;
+    bruceConfig.saveFile();
 }
 
-void gotoHome() {
+inline void gotoHome() {
     homeScreen = 1;
 }
 

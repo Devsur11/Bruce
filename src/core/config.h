@@ -115,6 +115,8 @@ public:
         {"Rickroll", "https://youtu.be/dQw4w9WgXcQ"}
     };
 
+    std::vector<String> animationThemes = {}; // Stores paths for animation themes
+
     /////////////////////////////////////////////////////////////////////////////////////
     // Constructor
     /////////////////////////////////////////////////////////////////////////////////////
@@ -204,6 +206,10 @@ public:
     void addDisabledMenu(String value);
     void setSpiPins(SPIPins value);
     void validateSpiPins(SPIPins value);
+
+    // Animation Themes
+    void addAnimationTheme(const String &path);
+    void removeAnimationTheme(const String &path);
     // TODO: removeDisabledMenu(String value);
 };
 

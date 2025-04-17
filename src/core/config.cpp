@@ -95,6 +95,9 @@ JsonDocument BruceConfig::toJson() const {
     _SD["cs"] = SDCARD_bus.cs;
     _SD["io0"] = SDCARD_bus.io0;
 
+    JsonArray _animationThemes = setting["animationThemes"].to<JsonArray>();
+    for (const auto &path : animationThemes) _animationThemes.add(path);
+
     return jsonDoc;
 }
 
@@ -424,6 +427,15 @@ void BruceConfig::fromFile() {
     } else {
         count++;
         log_e("Fail to load qrCodes");
+    }
+
+    if (!setting["animationThemes"].isNull()) {
+        animationThemes.clear();
+        JsonArray _animationThemes = setting["animationThemes"].as<JsonArray>();
+        for (JsonVariant path : _animationThemes) animationThemes.push_back(path.as<String>());
+    } else {
+        count++;
+        log_e("Fail");
     }
 
     validateConfig();
@@ -770,4 +782,17 @@ void BruceConfig::validateSpiPins(SPIPins value) {
     if (value.cs < 0 || value.cs > GPIO_PIN_COUNT) value.cs = GPIO_NUM_NC;
     if (value.io0 < 0 || value.io0 > GPIO_PIN_COUNT) value.io0 = GPIO_NUM_NC;
     if (value.io2 < 0 || value.io2 > GPIO_PIN_COUNT) value.io2 = GPIO_NUM_NC;
+}
+
+void BruceConfig::addAnimationTheme(const String &path) {
+    animationThemes.push_back(path);
+    saveFile();
+}
+
+void BruceConfig::removeAnimationTheme(const String &path) {
+    animationThemes.erase(
+        std::remove(animationThemes.begin(), animationThemes.end(), path),
+        animationThemes.end()
+    );
+    saveFile();
 }

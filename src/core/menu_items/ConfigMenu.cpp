@@ -32,7 +32,7 @@ void ConfigMenu::optionsMenu() {
     options.push_back({"Turn-off",   powerOff });
     options.push_back({"Deep Sleep", goToDeepSleep });
 
-    if (bruceConfig.devMode) options.push_back({"Dev Mode", [=]() { devMenu(); }});
+    options.push_back({"Dev Mode", [=]() { devMenu(); }});
 
     options.push_back({"About", showDeviceInfo});
     addOptionToMainMenu();
