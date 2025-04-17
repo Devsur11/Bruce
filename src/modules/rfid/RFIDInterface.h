@@ -6,12 +6,10 @@
  * @date 2024-08-19
  */
 
-
 #ifndef __RFID_INTERFACE_H__
 #define __RFID_INTERFACE_H__
 
 #include <globals.h>
-
 
 class RFIDInterface {
 public:
@@ -30,7 +28,7 @@ public:
         String picc_type;
     } PrintableUID;
 
-    typedef struct{
+    typedef struct {
         byte begin = 0x03;
         byte messageSize;
         byte header = 0xD1;
@@ -50,10 +48,7 @@ public:
         NOT_IMPLEMENTED = 5,
     };
 
-    enum NDEF_Payload_Type {
-        NDEF_TEXT = 0x54,
-        NDEF_URI = 0x55
-    };
+    enum NDEF_Payload_Type { NDEF_TEXT = 0x54, NDEF_URI = 0x55 };
 
     uint8_t keys[48][6] = {
         { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF },
@@ -115,7 +110,7 @@ public:
     bool pageReadSuccess = false;
     int pageReadStatus = FAILURE;
 
-    virtual ~RFIDInterface() {}  // Virtual destructor
+    virtual ~RFIDInterface() {} // Virtual destructor
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Life Cycle
