@@ -21,6 +21,7 @@ JsonDocument BruceConfig::toJson() const {
 
     setting["ledBright"] = ledBright;
     setting["ledColor"] = String(ledColor, HEX);
+    setting["ledBlinkEnabled"] = ledBlinkEnabled;
 
     JsonObject _webUI = setting["webUI"].to<JsonObject>();
     _webUI["user"] = webUI.user;
@@ -95,6 +96,9 @@ JsonDocument BruceConfig::toJson() const {
     _SD["cs"] = SDCARD_bus.cs;
     _SD["io0"] = SDCARD_bus.io0;
 
+    JsonArray _animationThemes = setting["animationThemes"].to<JsonArray>();
+    for (const auto &path : animationThemes) _animationThemes.add(path);
+
     return jsonDoc;
 }
 
@@ -141,15 +145,17 @@ void BruceConfig::fromFile() {
         log_e("Fail");
     }
 
-    if(!setting["themeFile"].isNull()) {
-      themePath = setting["themeFile"].as<String>();
+    if (!setting["themeFile"].isNull()) {
+        themePath = setting["themeFile"].as<String>();
     } else {
-      count++; log_e("Fail");
+        count++;
+        log_e("Fail");
     }
-    if(!setting["themeOnSd"].isNull()) {
-      theme.fs = setting["themeOnSd"].as<int>();
+    if (!setting["themeOnSd"].isNull()) {
+        theme.fs = setting["themeOnSd"].as<int>();
     } else {
-      count++; log_e("Fail");
+        count++;
+        log_e("Fail");
     }
 
     if (!setting["rot"].isNull()) {
@@ -189,10 +195,10 @@ void BruceConfig::fromFile() {
         log_e("Fail");
     }
     if (!setting["instantBoot"].isNull()) {
-      instantBoot = setting["instantBoot"].as<int>();
+        instantBoot = setting["instantBoot"].as<int>();
     } else {
-      count++;
-      log_e("Fail");
+        count++;
+        log_e("Fail");
     }
 
     if (!setting["ledBright"].isNull()) {
@@ -203,6 +209,12 @@ void BruceConfig::fromFile() {
     }
     if (!setting["ledColor"].isNull()) {
         ledColor = strtoul(setting["ledColor"], nullptr, 16);
+    } else {
+        count++;
+        log_e("Fail");
+    }
+    if (!setting["ledBlinkEnabled"].isNull()) {
+        ledBlinkEnabled = setting["ledBlinkEnabled"].as<int>();
     } else {
         count++;
         log_e("Fail");
@@ -356,7 +368,7 @@ void BruceConfig::fromFile() {
 
     if (!setting["iButton"].isNull()) {
         int val = setting["iButton"].as<int>();
-        if(val<GPIO_NUM_MAX) iButton = val;
+        if (val < GPIO_NUM_MAX) iButton = val;
         else log_w("iButton pin not set");
     } else {
         count++;
@@ -426,6 +438,15 @@ void BruceConfig::fromFile() {
         log_e("Fail to load qrCodes");
     }
 
+    if (!setting["animationThemes"].isNull()) {
+        animationThemes.clear();
+        JsonArray _animationThemes = setting["animationThemes"].as<JsonArray>();
+        for (JsonVariant path : _animationThemes) animationThemes.push_back(path.as<String>());
+    } else {
+        count++;
+        log_e("Fail");
+    }
+
     validateConfig();
     if (count > 0) saveFile();
 
@@ -471,6 +492,7 @@ void BruceConfig::validateConfig() {
     validateWifiAtStartupValue();
     validateLedBrightValue();
     validateLedColorValue();
+    validateLedBlinkEnabledValue();
     validateRfScanRangeValue();
     validateRfModuleValue();
     validateRfidModuleValue();
@@ -480,12 +502,10 @@ void BruceConfig::validateConfig() {
     validateColorInverted();
 }
 
-
-void BruceConfig::setUiColor(uint16_t primary, uint16_t* secondary, uint16_t* background) {
+void BruceConfig::setUiColor(uint16_t primary, uint16_t *secondary, uint16_t *background) {
     BruceTheme::_setUiColor(primary, secondary, background);
     saveFile();
 }
-
 
 void BruceConfig::setRotation(int value) {
     rotation = value;
@@ -564,6 +584,16 @@ void BruceConfig::setLedColor(uint32_t value) {
 
 void BruceConfig::validateLedColorValue() {
     ledColor = max<uint32_t>(0, min<uint32_t>(0xFFFFFFFF, ledColor));
+}
+
+void BruceConfig::setLedBlinkEnabled(int value) {
+    ledBlinkEnabled = value;
+    validateLedBlinkEnabledValue();
+    saveFile();
+}
+
+void BruceConfig::validateLedBlinkEnabledValue() {
+    if (ledBlinkEnabled > 1) ledBlinkEnabled = 1;
 }
 
 void BruceConfig::setWebUICreds(const String &usr, const String &pwd) {
@@ -668,13 +698,14 @@ void BruceConfig::setRfidModule(RFIDModules value) {
 }
 
 void BruceConfig::validateRfidModuleValue() {
-    if (rfidModule != M5_RFID2_MODULE && rfidModule != PN532_I2C_MODULE && rfidModule != PN532_SPI_MODULE) {
+    if (rfidModule != M5_RFID2_MODULE && rfidModule != PN532_I2C_MODULE && rfidModule != PN532_SPI_MODULE &&
+        rfidModule != RC522_SPI_MODULE) {
         rfidModule = M5_RFID2_MODULE;
     }
 }
 
 void BruceConfig::setiButtonPin(int value) {
-    if(value<GPIO_NUM_MAX) {
+    if (value < GPIO_NUM_MAX) {
         iButton = value;
         saveFile();
     } else log_e("iButton: Gpio pin not set, incompatible with this device\n");
@@ -770,4 +801,17 @@ void BruceConfig::validateSpiPins(SPIPins value) {
     if (value.cs < 0 || value.cs > GPIO_PIN_COUNT) value.cs = GPIO_NUM_NC;
     if (value.io0 < 0 || value.io0 > GPIO_PIN_COUNT) value.io0 = GPIO_NUM_NC;
     if (value.io2 < 0 || value.io2 > GPIO_PIN_COUNT) value.io2 = GPIO_NUM_NC;
+}
+
+void BruceConfig::addAnimationTheme(const String &path) {
+    animationThemes.push_back(path);
+    saveFile();
+}
+
+void BruceConfig::removeAnimationTheme(const String &path) {
+    animationThemes.erase(
+        std::remove(animationThemes.begin(), animationThemes.end(), path),
+        animationThemes.end()
+    );
+    saveFile();
 }

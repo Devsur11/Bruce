@@ -1,8 +1,7 @@
 #ifndef __THEME_H
 #define __THEME_H
-#include <ArduinoJson.h>
 #include "sd_functions.h"
-
+#include <ArduinoJson.h>
 
 #define DEFAULT_PRICOLOR 0xA80F
 
@@ -27,7 +26,7 @@ struct themeFiles {
 
 struct themeInfo {
     // Default storage (speed up loading)
-    uint8_t fs      =0;
+    uint8_t fs = 0;
     // control booleans to not try to read unnecessary files, defined on validateTheme
     bool border     =true;
     bool label      = true;
@@ -53,25 +52,26 @@ struct themeInfo {
 };
 
 class BruceTheme {
-    public:
+public:
     themeInfo theme;
     String themePath = "";
 
     // Theme colors in RGB565 format
     int32_t priColor = DEFAULT_PRICOLOR;
-    int32_t secColor = DEFAULT_PRICOLOR-0x2000;
-    int32_t bgColor  = 0x0000;
+    int32_t secColor = DEFAULT_PRICOLOR - 0x2000;
+    int32_t bgColor = 0x0000;
 
     // UI Color
-    void _setUiColor(uint16_t primary, uint16_t* secondary = nullptr, uint16_t* background = nullptr);
+    void _setUiColor(uint16_t primary, uint16_t *secondary = nullptr, uint16_t *background = nullptr);
     void validateUiColor();
 
-    bool openThemeFile(FS* fs, String filepath);
-    bool validateImgFile(FS* fs, String filepath);
-    String getThemeItemImg(String item) { return themePath.substring(0,themePath.lastIndexOf('/'))+ "/" + item; };
+    bool openThemeFile(FS *fs, String filepath);
+    bool validateImgFile(FS *fs, String filepath);
+    String getThemeItemImg(String item) {
+        return themePath.substring(0, themePath.lastIndexOf('/')) + "/" + item;
+    };
     void removeTheme(void);
-    FS* themeFS(void);
+    FS *themeFS(void);
 };
-
 
 #endif
